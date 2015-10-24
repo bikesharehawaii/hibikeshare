@@ -1,0 +1,8 @@
+@import 'config/pallette';
+@import 'config/fonts';
+
+body {
+  background: $green;
+}
+
+@import 'modules/navigation';
