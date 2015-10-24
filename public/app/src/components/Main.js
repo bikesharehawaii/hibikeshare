@@ -1,4 +1,5 @@
 require('normalize.css');
+require('../styles/app.scss');
 
 import React from 'react/addons';
 import {default as actions} from '../actions/actions.js';
@@ -9,11 +10,14 @@ import {
   mapbox_access_token
 } from '../globals/credentials.js';
 
-import {mapboxStyles} from '../globals/mapbox.js';
-import {connect} from 'fynx-decorators';
-// require('esri-leaflet/dist/esri-leaflet-src.js');
+import Navigation from './navigation.js';
 
-let yeomanImage = require('../images/yeoman.png');
+import {
+  mapboxStyles,
+  route_server
+} from '../globals/mapbox.js';
+
+import {connect} from 'fynx-decorators';
 
 const types = {
   "Lane": {
@@ -46,12 +50,12 @@ class AppComponent extends React.Component {
       center: [21.331, -157.777],
       zoom: 13
     })
+    const routes = [];
     let paths = L.esri.featureLayer({
-      url: 'http://services.arcgis.com/tNJpAOha4mODLkXz/ArcGIS/rest/services/BikePaths/FeatureServer/0',
+      url: route_server,
       where: '1=1',
-      style: (feature) => {
-        return types[feature.properties.Facility_T];
-      }
+      style: (feature) => types[feature.properties.Facility_T],
+      onEachFeature: (feature) => actions.addRoute(feature)
     })
     paths.addTo(this.map);
     paths.bindPopup((feature)=> {
@@ -62,7 +66,10 @@ class AppComponent extends React.Component {
 
   render() {
     return (
-      <div className="index" id="map" style={{height: '100vh', width: '100%'}}></div>
+      <div className="container">
+        <div className="index" id="map" style={{height: '100vh', width: '100%'}}></div>
+        <Navigation></Navigation>
+      </div>
     );
   }
 }
